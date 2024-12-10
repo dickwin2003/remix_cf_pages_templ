@@ -1,0 +1,13 @@
+[pages]
+workers_dev = true
+
+[pages.build]
+command = "npm run build"
+output = "build"
+
+[[headers]]
+for = "/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, HEAD, POST, PUT, DELETE, OPTIONS"
+Access-Control-Allow-Headers = "Content-Type"

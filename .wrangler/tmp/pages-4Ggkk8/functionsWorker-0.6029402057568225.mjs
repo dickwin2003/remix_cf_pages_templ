@@ -7898,7 +7898,7 @@ function createRequestHandler({
     }
   }), "getLoadContext")
 }) {
-  let handleRequest2 = (0, import_cloudflare.createRequestHandler)(build, mode2);
+  let handleRequest3 = (0, import_cloudflare.createRequestHandler)(build, mode2);
   return async (cloudflare) => {
     let loadContext = await getLoadContext({
       ...cloudflare,
@@ -7916,7 +7916,7 @@ function createRequestHandler({
         }
       }
     });
-    return handleRequest2(cloudflare.request, loadContext);
+    return handleRequest3(cloudflare.request, loadContext);
   };
 }
 function createPagesFunctionHandler({
@@ -7924,7 +7924,7 @@ function createPagesFunctionHandler({
   getLoadContext,
   mode: mode2
 }) {
-  let handleRequest2 = createRequestHandler({
+  let handleRequest3 = createRequestHandler({
     build,
     getLoadContext,
     mode: mode2
@@ -7938,7 +7938,7 @@ function createPagesFunctionHandler({
     } catch {
     }
     if (!response) {
-      response = await handleRequest2(context);
+      response = await handleRequest3(context);
     }
     return response;
   }, "handleFetch");
@@ -49466,14 +49466,42 @@ var init_server2 = __esm({
 });
 
 // [[path]].ts
-var onRequest;
+var handleRequest2, onRequest;
 var init_path = __esm({
   "[[path]].ts"() {
     "use strict";
     init_functionsRoutes_0_5675275918864775();
     init_esm();
     init_server2();
-    onRequest = createPagesFunctionHandler({ build: server_exports });
+    handleRequest2 = createPagesFunctionHandler({ build: server_exports });
+    onRequest = /* @__PURE__ */ __name(async (context) => {
+      try {
+        if (context.request.method === "OPTIONS") {
+          return new Response(null, {
+            status: 204,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,HEAD,POST,PUT,DELETE,OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              "Access-Control-Max-Age": "86400"
+            }
+          });
+        }
+        const response = await handleRequest2(context);
+        const newHeaders = new Headers(response.headers);
+        newHeaders.set("Access-Control-Allow-Origin", "*");
+        newHeaders.set("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE,OPTIONS");
+        newHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: newHeaders
+        });
+      } catch (error) {
+        console.error("Error handling request:", error);
+        return new Response("Internal Server Error", { status: 500 });
+      }
+    }, "onRequest");
   }
 });
 
@@ -49495,10 +49523,10 @@ var init_functionsRoutes_0_5675275918864775 = __esm({
   }
 });
 
-// ../.wrangler/tmp/bundle-gruVfh/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-dSODB9/middleware-loader.entry.ts
 init_functionsRoutes_0_5675275918864775();
 
-// ../.wrangler/tmp/bundle-gruVfh/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-dSODB9/middleware-insertion-facade.js
 init_functionsRoutes_0_5675275918864775();
 
 // ../node_modules/wrangler/templates/pages-template-worker.ts
@@ -49994,7 +50022,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-gruVfh/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-dSODB9/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -50027,7 +50055,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-gruVfh/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-dSODB9/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

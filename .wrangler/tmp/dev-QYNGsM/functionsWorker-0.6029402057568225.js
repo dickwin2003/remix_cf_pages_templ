@@ -8095,7 +8095,7 @@ function createRequestHandler({
     }
   }), "getLoadContext")
 }) {
-  let handleRequest2 = (0, import_cloudflare.createRequestHandler)(build, mode2);
+  let handleRequest3 = (0, import_cloudflare.createRequestHandler)(build, mode2);
   return async (cloudflare) => {
     let loadContext = await getLoadContext({
       ...cloudflare,
@@ -8113,7 +8113,7 @@ function createRequestHandler({
         }
       }
     });
-    return handleRequest2(cloudflare.request, loadContext);
+    return handleRequest3(cloudflare.request, loadContext);
   };
 }
 __name(createRequestHandler, "createRequestHandler");
@@ -8122,7 +8122,7 @@ function createPagesFunctionHandler({
   getLoadContext,
   mode: mode2
 }) {
-  let handleRequest2 = createRequestHandler({
+  let handleRequest3 = createRequestHandler({
     build,
     getLoadContext,
     mode: mode2
@@ -8136,7 +8136,7 @@ function createPagesFunctionHandler({
     } catch {
     }
     if (!response) {
-      response = await handleRequest2(context);
+      response = await handleRequest3(context);
     }
     return response;
   }, "handleFetch");
@@ -51306,6 +51306,7 @@ var init_server2 = __esm({
     };
   }
 });
+var handleRequest2;
 var onRequest;
 var init_path = __esm({
   "[[path]].ts"() {
@@ -51313,7 +51314,35 @@ var init_path = __esm({
     init_functionsRoutes_0_5675275918864775();
     init_esm();
     init_server2();
-    onRequest = createPagesFunctionHandler({ build: server_exports });
+    handleRequest2 = createPagesFunctionHandler({ build: server_exports });
+    onRequest = /* @__PURE__ */ __name2(async (context) => {
+      try {
+        if (context.request.method === "OPTIONS") {
+          return new Response(null, {
+            status: 204,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,HEAD,POST,PUT,DELETE,OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              "Access-Control-Max-Age": "86400"
+            }
+          });
+        }
+        const response = await handleRequest2(context);
+        const newHeaders = new Headers(response.headers);
+        newHeaders.set("Access-Control-Allow-Origin", "*");
+        newHeaders.set("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE,OPTIONS");
+        newHeaders.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: newHeaders
+        });
+      } catch (error) {
+        console.error("Error handling request:", error);
+        return new Response("Internal Server Error", { status: 500 });
+      }
+    }, "onRequest");
   }
 });
 var routes;
